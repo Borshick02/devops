@@ -21,27 +21,28 @@ jobs:
       - name: Building
         run: |
           python -m compileall .
+          
+
       - name: Make zip directory
         run: |
           mkdir compiled
           mv **/*.pyc compiled
           zip -r data.zip compiled
-      - name: Create binary
-        run: |
-          echo "Creating a binary file..."
-          mkdir -p binaries
-          echo "This is a binary file" > binaries/binaryfile.bin
 
-      - name: Archive production artifacts
+      - name: Install Dependencies
         run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Build Binary File
+        run: |
+          python -m pip install pyinstaller
+          pyinstaller --onefile dvp.py  
           mkdir -p release
-          zip -r release/release.zip dist/
-        shell: bash
+          mv dist/your_script release/data
 
       - name: Verify release artifact
         run: ls -la release/
-
-
 
       - name: Create GitHub Release
         id: create_release
