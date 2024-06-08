@@ -25,7 +25,23 @@ jobs:
         run: |
           mkdir compiled
           mv **/*.pyc compiled
-          zip -r compiled.zip compiled
+          zip -r data.zip compiled
+      - name: Create binary
+        run: |
+          echo "Creating a binary file..."
+          mkdir -p binaries
+          echo "This is a binary file" > binaries/binaryfile.bin
+
+      - name: Archive production artifacts
+        run: |
+          mkdir -p release
+          zip -r release/release.zip dist/
+        shell: bash
+
+      - name: Verify release artifact
+        run: ls -la release/
+
+
 
       - name: Create GitHub Release
         id: create_release
@@ -43,6 +59,6 @@ jobs:
          GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./compiled.zip
-          asset_name: compiled.zip
+          asset_path: ./data.zip
+          asset_name: data.zip
           asset_content_type: application/zip
