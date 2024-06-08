@@ -1,10 +1,10 @@
-# .github/workflows/auto-release.yml
+
 name: Auto Build and Release Binary
 
 on:
   push:
     tags:
-      - 'v*.*.*'  # Запускать рабочий процесс при пуше тегов вида v*.*.*
+      - 'v*.*.*'
 
 permissions:
   contents: write

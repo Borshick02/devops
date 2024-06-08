@@ -1,4 +1,4 @@
-
+# .github/workflows/auto-release.yml
 name: Auto Build and Release Binary
 
 on:
@@ -25,11 +25,11 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
+          python -m pip install pyinstaller
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
       - name: Build binary with PyInstaller
         run: |
-          python -m pip install pyinstaller
           pyinstaller --onefile main.py
 
       - name: Archive build output
