@@ -1,44 +1,47 @@
 name: Create Release
+name: Python calculator tests
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
     tags:
       - 'v*.*.*'
-  pull_request:
-    branches: [main]
+
+permissions:
+  contents: write
+  packages: write
 
 jobs:
-  build:
+  build-n-publish:
+    name: Build and publish
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repository
+      - name: Checkout source
         uses: actions/checkout@v2
 
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: '3.x'
+          python-version: "3.10"
 
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt  
+          pip install -r requirements.txt
 
       - name: Build Binary File
         run: |
-          # Ваша логика сборки бинарного файла, например, использование PyInstaller
           python -m pip install pyinstaller
-          pyinstaller --onefile your_script.py
-          # Возможно, вам нужно скопировать бинарный файл в отдельную директорию
+          pyinstaller --onefile your_script.py  # Замените your_script.py на ваш скрипт
           mkdir -p release
-          cp dist/your_script release/binaryfile
+          mv dist/your_script release/binaryfile  # Замените your_script на имя вашего бинарного файла
 
       - name: Verify release artifact
         run: ls -la release/
 
-      - name: Create release
+      - name: Create GitHub Release
         id: create_release
         uses: actions/create-release@v1
         env:
