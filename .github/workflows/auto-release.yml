@@ -1,12 +1,7 @@
-name: Create Release
-name: Python calculator tests
-
 on:
   push:
     branches:
       - main
-    tags:
-      - 'v*.*.*'
 
 permissions:
   contents: write
@@ -16,51 +11,38 @@ jobs:
   build-n-publish:
     name: Build and publish
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout source
         uses: actions/checkout@v2
-
-      - name: Set up Python
+      - name: Install Python
         uses: actions/setup-python@v2
         with:
           python-version: "3.10"
-
-      - name: Install Dependencies
+      - name: Building
         run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-
-      - name: Build Binary File
+          python -m compileall .
+      - name: Make zip directory
         run: |
-          python -m pip install pyinstaller
-          pyinstaller --onefile your_script.py  # Замените your_script.py на ваш скрипт
-          mkdir -p release
-          mv dist/your_script release/binaryfile  # Замените your_script на имя вашего бинарного файла
-
-      - name: Verify release artifact
-        run: ls -la release/
+          mkdir compiled
+          mv **/*.pyc compiled
+          zip -r compiled.zip compiled
 
       - name: Create GitHub Release
         id: create_release
         uses: actions/create-release@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
+           GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
         with:
-          tag_name: ${{ github.ref_name }}
-          release_name: Release ${{ github.ref_name }}
-          body: |
-            Changes in this release:
-            - List your changes here
+          tag_name: ${{ github.run_number }}
+          release_name: Release ${{ github.ref }}
           draft: false
           prerelease: false
-
-      - name: Upload release assets (binary)
+      - name: Publishing
         uses: actions/upload-release-asset@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
+         GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: release/binaryfile
-          asset_name: binaryfile
-          asset_content_type: application/octet-stream
+          asset_path: ./compiled.zip
+          asset_name: compiled.zip
+          asset_content_type: application/zip
