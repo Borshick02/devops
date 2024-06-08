@@ -11,37 +11,28 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      pull-requests: write
-      repository-projects: write
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
+      - name: Set up Python
+        uses: actions/setup-python@v2
         with:
-          node-version: '14'
+          python-version: '3.x'
 
       - name: Install Dependencies
-        run: npm install
-
-      - name: Build Vue.js App
-        run: npm run build
-
-      - name: Install pkg
-        run: npm install pkg
-
-      - name: Create Binary File
-        run: npm run pkg
-
-      - name: Archive production artifacts
         run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt  # замените на ваш файл зависимостей
+
+      - name: Build Binary File
+        run: |
+          # Ваша логика сборки бинарного файла, например, использование PyInstaller
+          pyinstaller --onefile your_script.py
+          # Возможно, вам нужно скопировать бинарный файл в отдельную директорию
           mkdir -p release
-          zip -r release/release.zip dist/
-        shell: bash
+          cp dist/your_script release/binaryfile
 
       - name: Verify release artifact
         run: ls -la release/
@@ -60,22 +51,12 @@ jobs:
           draft: false
           prerelease: false
 
-      - name: Upload release assets (dist)
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./release/release.zip
-          asset_name: release.zip
-          asset_content_type: application/zip
-
       - name: Upload release assets (binary)
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: dist/my-vue-app-linux
-          asset_name: binaryfile.bin
+          asset_path: release/binaryfile
+          asset_name: binaryfile
           asset_content_type: application/octet-stream
