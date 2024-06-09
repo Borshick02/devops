@@ -1,4 +1,5 @@
-name: Build and Publish
+name: Docker set
+
 
 on:
   push:
@@ -30,9 +31,9 @@ jobs:
       - name: Build Binary File
         run: |
           python -m pip install pyinstaller
-          pyinstaller --onefile dvp.py
+          pyinstaller --onefile main.py  # Измените dvp.py на main.py
           mkdir -p release
-          mv dist/dvp release/
+          mv dist/main release/  # Измените dvp на main
 
       - name: Verify release artifact
         run: ls -la release/
@@ -41,21 +42,21 @@ jobs:
         id: create_release
         uses: actions/create-release@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ github.run_number }}
-          release_name: Release ${{ product }}
+          release_name: Release ${{ github.run_number }}
           draft: false
           prerelease: false
 
       - name: Upload Release Assets
         uses: actions/upload-release-asset@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: release/dvp
-          asset_name: dvp
+          asset_path: release/main  # Измените dvp на main
+          asset_name: main  # Измените dvp на main
           asset_content_type: application/octet-stream
 
   docker:
