@@ -1,14 +1,17 @@
 name: Build and Push Docker image to Docker Hub
 
-on: push
+on:
+  push:
+    branches:
+      - main
 
 permissions:
-  contents: read
+  contents: write
   packages: write
 
 jobs:
   push_to_registry:
-    name: Push Docker image to Docker Hub
+    name: Build and Publish
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repo
