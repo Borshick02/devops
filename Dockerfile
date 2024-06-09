@@ -1,27 +1,18 @@
-# Используем базовый образ Python
+# Базовый образ Python
 FROM python:3.10-slim
 
-# Установим рабочую директорию
+# Установим зависимости
 WORKDIR /app
+COPY requirements.txt /app/
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Установим зависимости, включая binutils для objdump
-RUN apt-get update && apt-get install -y binutils
-
-# Скопируем requirements.txt и установим зависимости
-COPY requirements.txt requirements.txt
-RUN pip install --upgrade pip && pip install -r requirements.txt
-
-# Установим PyInstaller
-RUN pip install pyinstaller
-
-# Скопируем весь проект в контейнер
-COPY . .
+# Скопируем остальные файлы
+COPY . /app
 
 # Соберем бинарный файл с помощью PyInstaller
-RUN pyinstaller --onefile main.py
+RUN python -m pip install pyinstaller && \
+    pyinstaller --onefile dvp.py && \
+    mv dist/dvp /app/release/dvp
 
-# Переместим бинарный файл в директорию release
-RUN mkdir -p release && cp dist/main release/binaryfile
-
-# Определим команду для запуска вашего приложения (при необходимости)
-CMD ["./release/binaryfile"]
+# Зададим команду по умолчанию
+CMD ["./release/dvp"]
