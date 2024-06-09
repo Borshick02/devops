@@ -1,65 +1,18 @@
-on:
-  push:
-    branches:
-      - main
+# Базовый образ Python
+FROM python:3.10-slim
 
-permissions:
-  contents: write
-  packages: write
+# Установим зависимости
+WORKDIR /app
+COPY requirements.txt /app/
+RUN pip install --no-cache-dir -r requirements.txt
 
-jobs:
-  build-n-publish:
-    name: Build and publish
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout source
-        uses: actions/checkout@v2
-      - name: Install Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: "3.10"
-      - name: Building
-        run: |
-          python -m compileall .
-          
+# Скопируем остальные файлы
+COPY . /app
 
-      - name: Make zip directory
-        run: |
-          mkdir compiled
-          mv **/*.pyc compiled
-          zip -r data.zip compiled
+# Соберем бинарный файл с помощью PyInstaller
+RUN python -m pip install pyinstaller && \
+    pyinstaller --onefile dvp.py && \
+    mv dist/dvp /app/release/dvp
 
-      - name: Install Dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-
-      - name: Build Binary File
-        run: |
-          python -m pip install pyinstaller
-          pyinstaller --onefile dvp.py  
-          mkdir -p release
-          mv dist/your_script release/data
-
-      - name: Verify release artifact
-        run: ls -la release/
-
-      - name: Create GitHub Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-           GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
-        with:
-          tag_name: ${{ github.run_number }}
-          release_name: Release ${{ github.ref }}
-          draft: false
-          prerelease: false
-      - name: Publishing
-        uses: actions/upload-release-asset@v1
-        env:
-         GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./data.zip
-          asset_name: data.zip
-          asset_content_type: application/zip
+# Зададим команду по умолчанию
+CMD ["./release/dvp"]
