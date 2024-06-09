@@ -1,3 +1,5 @@
+name: Build and Publish
+
 on:
   push:
     branches:
@@ -14,31 +16,24 @@ jobs:
     steps:
       - name: Checkout source
         uses: actions/checkout@v2
+
       - name: Install Python
         uses: actions/setup-python@v2
         with:
           python-version: "3.10"
-      - name: Building
-        run: |
-          python -m compileall .
-          
-
-      - name: Make zip directory
-        run: |
-          mkdir compiled
-          mv **/*.pyc compiled
-          zip -r data.zip compiled
 
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+
       - name: Build Binary File
         run: |
           python -m pip install pyinstaller
           pyinstaller --onefile dvp.py  
           mkdir -p release
-          mv dist/your_script release/data
+          mv dist/dvp release/data
+
       - name: Verify release artifact
         run: ls -la release/
 
@@ -46,18 +41,19 @@ jobs:
         id: create_release
         uses: actions/create-release@v1
         env:
-           GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
         with:
           tag_name: ${{ github.run_number }}
           release_name: Release ${{ github.ref }}
           draft: false
           prerelease: false
-      - name: Publishing
+
+      - name: Upload Release Assets
         uses: actions/upload-release-asset@v1
         env:
-         GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./data.zip
-          asset_name: data.zip
-          asset_content_type: application/zip
+          asset_path: ./release/data
+          asset_name: dvp
+          asset_content_type: application/octet-stream
