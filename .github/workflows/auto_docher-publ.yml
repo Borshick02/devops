@@ -1,6 +1,11 @@
 name: Build and Push Docker image to Docker Hub
 
 on: push
+
+permissions:
+  contents: read
+  packages: write
+
 jobs:
   push_to_registry:
     name: Push Docker image to Docker Hub
@@ -15,9 +20,16 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
       - name: Build and push Docker image
         uses: docker/build-push-action@v4
         with:
           context: .
           push: true
           tags: aazolotova/appdev:latest
+
+      - name: Image digest
+        id: digest
+        run: echo ${{ steps.docker_build.outputs.digest }}
