@@ -30,9 +30,9 @@ jobs:
       - name: Build Binary File
         run: |
           python -m pip install pyinstaller
-          pyinstaller --onefile dvp.py  
+          pyinstaller --onefile main.py  
           mkdir -p release
-          mv dist/dvp release/data
+          mv dist/main release/main
 
       - name: Verify release artifact
         run: ls -la release/
@@ -54,6 +54,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./release/data
-          asset_name: dvp
+          asset_path: ./release/main
+          asset_name: main
           asset_content_type: application/octet-stream
