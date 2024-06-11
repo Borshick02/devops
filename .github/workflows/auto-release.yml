@@ -15,10 +15,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout source
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
 
       - name: Install Python
-        uses: actions/setup-python@v3
+        uses: actions/setup-python@v2
         with:
           python-version: "3.10"
 
@@ -32,7 +32,7 @@ jobs:
           python -m pip install pyinstaller
           pyinstaller --onefile main.py
           mkdir -p release
-          mv dist/main release/binary
+          mv dist/main release/doc.bin
 
       - name: Verify release artifact
         run: ls -la release/
@@ -54,6 +54,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./release/main
-          asset_name: main
+          asset_path: ./release/doc.bin
+          asset_name: doc.bin
           asset_content_type: application/octet-stream
