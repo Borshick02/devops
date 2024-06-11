@@ -57,3 +57,4 @@ jobs:
           asset_path: ./release/doc.bin
           asset_name: doc.bin
           asset_content_type: application/octet-stream
+
