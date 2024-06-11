@@ -30,9 +30,9 @@ jobs:
       - name: Build Binary File
         run: |
           python -m pip install pyinstaller
-          pyinstaller --onefile doc.bin
+          pyinstaller --onefile main.py
           mkdir -p release
-          mv dist/main release/main
+          mv dist/main release/binary
 
       - name: Verify release artifact
         run: ls -la release/
