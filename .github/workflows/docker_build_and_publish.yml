@@ -55,8 +55,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: release/main  # Измените dvp на main
-          asset_name: main  # Измените dvp на main
+          asset_path: release/main
+          asset_name: main
           asset_content_type: application/octet-stream
 
   docker:
