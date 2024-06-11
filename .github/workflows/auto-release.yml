@@ -30,7 +30,7 @@ jobs:
       - name: Build Binary File
         run: |
           python -m pip install pyinstaller
-          pyinstaller --onefile main.py
+          pyinstaller --onefile doc.bin
           mkdir -p release
           mv dist/main release/main
 
