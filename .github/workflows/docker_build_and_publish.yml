@@ -81,5 +81,4 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/python-app:latest
-
+          tags: ${{ secrets.DOCKER_USERNAME }}/python-dev:latest
