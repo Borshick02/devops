@@ -1,8 +1,8 @@
 def main():
-    sum_result = add(5, 3)
+    sum_result = add(6, 3)
     print("Сумма:", sum_result)
 
-    difference_result = subtract(5, 3)
+    difference_result = subtract(10, 3)
     print("Разность:", difference_result)
 
 
